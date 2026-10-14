@@ -154,7 +154,8 @@ export async function buildApp(options: BuildAppOptions): Promise<App> {
   const indexHtml = path.join(config.webDistDir, 'index.html');
   const hasWeb = existsSync(indexHtml);
   if (hasWeb) {
-    await app.register(fastifyStatic, { root: config.webDistDir, prefix: '/', wildcard: false, index: ['index.html'] });
+    // wildcard (padrão) resolve arquivos a cada requisição: um novo build do painel passa a ser servido sem reiniciar
+    await app.register(fastifyStatic, { root: config.webDistDir, prefix: '/', index: ['index.html'] });
   }
 
   app.setNotFoundHandler((request, reply) => {
@@ -162,8 +163,14 @@ export async function buildApp(options: BuildAppOptions): Promise<App> {
       reply.code(404).send({ error: { code: 'not_found', message: 'Rota não encontrada', details: null } });
       return;
     }
-    if (hasWeb && request.method === 'GET') {
+    const pathname = request.url.split('?')[0] ?? '';
+    const looksLikeFile = /\.[a-z0-9]{2,8}$/i.test(pathname);
+    if (hasWeb && request.method === 'GET' && !looksLikeFile) {
       reply.type('text/html').sendFile('index.html');
+      return;
+    }
+    if (looksLikeFile) {
+      reply.code(404).type('text/plain').send('Arquivo não encontrado');
       return;
     }
     reply.code(404).type('text/plain').send('Interface web não compilada. Execute `npm run build` ou use `npm run dev`.');
