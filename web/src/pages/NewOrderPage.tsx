@@ -145,6 +145,7 @@ export function NewOrderPage() {
   const q = quote.data;
   const activeZones = (zones.data ?? []).filter((z) => z.isActive);
 
+  const canSubmit = items.length > 0 && (Boolean(editId) || confirmed) && Boolean(q?.ok);
   const addOrUpdate = (item: CartItem) => {
     setItems((list) => (list.some((i) => i.key === item.key) ? list.map((i) => (i.key === item.key ? item : i)) : [...list, item]));
     setConfiguring(null);
@@ -157,7 +158,7 @@ export function NewOrderPage() {
         subtitle={conversationId ? `Conversa com ${conversation.data?.customerName ?? conversation.data?.customerPhone ?? '…'}` : 'O valor é calculado pelo servidor a partir do catálogo.'}
         actions={<Button onClick={() => navigate(-1)}>← Voltar</Button>}
       />
-      <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1.2fr) minmax(320px, 1fr)' }}>
+      <div className="compose-layout">
         <Card title="Cardápio">
           <div className="inline-fields">
             <input type="search" placeholder="Buscar produto…" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Buscar produto" />
@@ -172,7 +173,7 @@ export function NewOrderPage() {
           </div>
           <div className="grid cols-3" style={{ marginTop: '0.75rem' }}>
             {visibleProducts.map((p) => (
-              <button key={p.id} type="button" className="order-card" style={{ textAlign: 'left', opacity: p.isAvailable ? 1 : 0.5 }} onClick={() => setConfiguring({ product: p })} disabled={!p.isAvailable}>
+              <button key={p.id} type="button" className="order-card product-tile" style={{ opacity: p.isAvailable ? 1 : 0.5 }} onClick={() => setConfiguring({ product: p })} disabled={!p.isAvailable}>
                 <strong>{p.name}</strong>
                 {!p.isAvailable ? <span className="badge danger"> Indisponível</span> : null}
                 <div className="small muted">{p.description}</div>
@@ -363,11 +364,21 @@ export function NewOrderPage() {
                 <Check label="Já entrar como Confirmado (pular 'Recebido')" checked={initialStatus === 'confirmado'} onChange={(e) => setInitialStatus(e.target.checked ? 'confirmado' : 'recebido')} />
               </>
             ) : null}
-            <Button variant="primary" size="lg" className="block" style={{ marginTop: '0.75rem' }} disabled={items.length === 0 || (!editId && !confirmed) || (q ? !q.ok : true)} loading={submit.isPending} onClick={() => submit.mutate()}>
+            <Button variant="primary" size="lg" className="block" style={{ marginTop: '0.75rem' }} disabled={!canSubmit} loading={submit.isPending} onClick={() => submit.mutate()}>
               {editId ? 'Salvar alterações' : `Criar pedido ${q ? formatBRL(q.totalCents) : ''}`}
             </Button>
           </Card>
         </div>
+      </div>
+      {/* Celular: total e ação principal sempre à vista */}
+      <div className="compose-bar" role="region" aria-label="Resumo do pedido">
+        <div className="total">
+          <div className="small muted">{items.length} item(ns){q && !q.ok ? ' · pendências' : ''}</div>
+          <div className="big">{q ? formatBRL(q.totalCents) : 'R$ 0,00'}</div>
+        </div>
+        <Button variant="primary" size="lg" disabled={!canSubmit} loading={submit.isPending} onClick={() => submit.mutate()}>
+          {editId ? 'Salvar' : 'Criar pedido'}
+        </Button>
       </div>
 
       {configuring ? <ItemConfigurator product={configuring.product} groups={groups} initial={configuring.item} onClose={() => setConfiguring(null)} onSave={addOrUpdate} /> : null}

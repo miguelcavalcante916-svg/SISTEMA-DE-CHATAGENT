@@ -24,8 +24,8 @@ export function ConversationsPage() {
   return (
     <>
       <PageHeader title="Conversas" subtitle="Atendimento por canal integrado, simulador ou registro manual." actions={<Button variant="primary" onClick={() => setNewOpen(true)}>➕ Conversa manual</Button>} />
-      <div className="chat-layout">
-        <Card>
+      <div className={`chat-layout ${id ? 'has-detail' : ''}`}>
+        <Card className="conv-pane">
           <div className="tabs" role="tablist">
             <button type="button" role="tab" className={filter === 'open' ? 'active' : ''} onClick={() => setFilter('open')}>
               Abertas
@@ -57,7 +57,7 @@ export function ConversationsPage() {
             ))}
           </div>
         </Card>
-        {id ? <ConversationDetail id={id} /> : <Card><Empty icon="👈" title="Selecione uma conversa" /></Card>}
+        {id ? <ConversationDetail id={id} /> : <Card className="detail-pane"><Empty icon="👈" title="Selecione uma conversa" /></Card>}
       </div>
       {newOpen ? <NewConversationModal onClose={() => setNewOpen(false)} /> : null}
     </>
@@ -123,14 +123,17 @@ function ConversationDetail({ id }: { id: string }) {
     onError: (e) => toast.error(errorMessage(e)),
   });
 
-  if (conv.isLoading) return <Card><Spinner /></Card>;
-  if (conv.error || !conv.data) return <Card><ErrorBox error={conv.error ?? new Error('Conversa não encontrada')} /></Card>;
+  if (conv.isLoading) return <Card className="detail-pane"><Spinner /></Card>;
+  if (conv.error || !conv.data) return <Card className="detail-pane"><ErrorBox error={conv.error ?? new Error('Conversa não encontrada')} /></Card>;
   const c = conv.data;
   const d = c.draft;
   const productName = (pid: string) => catalog.data?.products.find((p) => p.id === pid)?.name ?? pid;
 
   return (
-    <Card>
+    <Card className="detail-pane">
+      <Link to="/conversas" className="btn sm back-link" style={{ marginBottom: '0.5rem' }}>
+        ← Conversas
+      </Link>
       <div className="row between" style={{ marginBottom: '0.5rem' }}>
         <div>
           <h2 style={{ marginBottom: 0 }}>

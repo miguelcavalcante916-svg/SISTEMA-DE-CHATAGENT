@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import type { Conversation, Order } from '../api/types';
 import { useAuth } from '../state/auth';
@@ -8,6 +9,8 @@ import { Button } from './ui';
 export function Layout() {
   const { user, business, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [open, setOpen] = useState(false);
   const orders = useQuery({
     queryKey: ['nav-orders'],
     queryFn: () => api.get<{ orders: Order[]; counts: Record<string, number> }>('/api/orders?limit=1'),
@@ -23,9 +26,22 @@ export function Layout() {
     .reduce((acc, [, v]) => acc + v, 0);
   const needsHuman = convs.data?.needsHumanCount ?? 0;
 
+  // fecha a gaveta ao navegar e com Escape
+  useEffect(() => setOpen(false), [location.pathname, location.search]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
+
   return (
     <div className="app">
-      <aside className="sidebar">
+      <div className={`drawer-backdrop ${open ? 'open' : ''}`} onClick={() => setOpen(false)} aria-hidden />
+      <aside className={`sidebar ${open ? 'open' : ''}`} id="menu-principal" aria-label="Menu principal">
+        <Button className="sidebar-close icon" variant="ghost" onClick={() => setOpen(false)} aria-label="Fechar menu">
+          ✕
+        </Button>
         <div className="brand">
           {business?.name ?? 'Painel'}
           <small>
@@ -68,12 +84,16 @@ export function Layout() {
       </aside>
       <div className="main">
         <header className="topbar">
-          <span className="muted small">
+          <Button className="menu-btn icon" onClick={() => setOpen(true)} aria-label="Abrir menu" aria-controls="menu-principal" aria-expanded={open}>
+            ☰
+          </Button>
+          <span className="brand-mini">{business?.name ?? 'Painel'}</span>
+          <span className="muted small user-label">
             {user?.name} · {user?.role === 'admin' ? 'Administrador' : 'Atendente'}
           </span>
           <span className="spacer" />
-          <Button size="sm" onClick={() => navigate('/pedidos/novo')} variant="primary">
-            ➕ Novo pedido
+          <Button size="sm" onClick={() => navigate('/pedidos/novo')} variant="primary" aria-label="Novo pedido">
+            ➕ <span className="btn-label">Novo pedido</span>
           </Button>
           <Button size="sm" onClick={() => void logout().then(() => navigate('/login'))}>
             Sair
