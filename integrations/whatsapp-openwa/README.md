@@ -15,11 +15,12 @@ Conecta um número de WhatsApp ao sistema local usando o [open-wa](https://githu
 
 ```bash
 # na raiz do repositório
+npm run whatsapp:setup     # cria os dois .env com os mesmos segredos e confere pré-requisitos
 npm run whatsapp:install
-cp integrations/whatsapp-openwa/.env.example integrations/whatsapp-openwa/.env
-# edite o .env: SERVER_URL, WEBHOOK_SECRET e BRIDGE_TOKEN iguais aos do servidor
-npm run whatsapp:start
+npm run whatsapp:start     # com o servidor já rodando (npm run dev) em outro terminal
 ```
+
+Prefere fazer à mão? Copie `.env.example` para `.env` e preencha `SERVER_URL`, `WEBHOOK_SECRET` e `BRIDGE_TOKEN` com os mesmos valores do `.env` da raiz.
 
 Escaneie o QR code mostrado no terminal com o WhatsApp do estabelecimento. A pasta `session-data/` guarda a sessão (não compartilhe).
 

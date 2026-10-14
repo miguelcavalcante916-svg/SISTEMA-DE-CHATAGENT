@@ -22,6 +22,7 @@
     "backup": "npm run backup -w server",
     "backup:verify": "npm run backup:verify -w server",
     "whatsapp:install": "npm install --prefix integrations/whatsapp-openwa",
+    "whatsapp:setup": "node scripts/whatsapp-setup.mjs",
     "whatsapp:start": "npm start --prefix integrations/whatsapp-openwa"
   },
   "devDependencies": {
