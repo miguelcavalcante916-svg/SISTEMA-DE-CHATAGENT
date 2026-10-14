@@ -1,0 +1,28 @@
+{
+  "name": "sistema-atendimento-pedidos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema local de atendimento e gestão de pedidos para comércios alimentícios",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,green \"npm run dev -w server\" \"npm run dev -w web\"",
+    "build": "npm run build -w server && npm run build -w web",
+    "start": "npm run start -w server",
+    "test": "npm run test -w server && npm run test -w web",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w web",
+    "migrate": "npm run migrate -w server",
+    "seed:demo": "npm run seed:demo -w server",
+    "backup": "npm run backup -w server",
+    "backup:verify": "npm run backup:verify -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
