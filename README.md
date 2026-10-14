@@ -93,7 +93,7 @@ npm test            # servidor (vitest) + web (vitest, sem testes de UI além da
 npm run typecheck   # TypeScript nos dois pacotes
 ```
 
-Cobertura do servidor (≈75 testes): cálculo de pedidos e rejeição de valores do cliente, retirada sem endereço e entrega com validação, confirmação obrigatória pela conversa, transições de status, separação pedido/pagamento, QR Pix desabilitado/pendente e vetor oficial do BCB, comprovante e reimpressão, Ollama indisponível/malformado, transferência para humano, isolamento por estabelecimento, autenticação e permissões, webhooks assinados, backup e retenção.
+Resultados detalhados em `docs/TESTES.md`. Cobertura do servidor (72 testes): cálculo de pedidos e rejeição de valores do cliente, retirada sem endereço e entrega com validação, confirmação obrigatória pela conversa, transições de status, separação pedido/pagamento, QR Pix desabilitado/pendente e vetor oficial do BCB, comprovante e reimpressão, Ollama indisponível/malformado, transferência para humano, isolamento por estabelecimento, autenticação e permissões, webhooks assinados, backup e retenção.
 
 ## Estrutura
 

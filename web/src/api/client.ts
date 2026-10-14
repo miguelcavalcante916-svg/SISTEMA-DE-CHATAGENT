@@ -26,6 +26,7 @@ async function request<T>(method: string, url: string, body?: unknown): Promise<
     data = null;
   }
   if (!res.ok) {
+    if (res.status === 401 && !url.startsWith('/api/auth/')) window.dispatchEvent(new CustomEvent('auth:unauthorized'));
     const err = (data as { error?: { code?: string; message?: string; details?: unknown } } | null)?.error;
     throw new ApiError(res.status, err?.code ?? 'erro', err?.message ?? `Erro ${res.status}`, err?.details ?? null);
   }
