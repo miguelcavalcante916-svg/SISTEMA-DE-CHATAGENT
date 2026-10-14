@@ -63,9 +63,18 @@ WhatsApp Web (Chromium)  <->  integrations/whatsapp-openwa (open-wa)  <->  servi
 
 Se a ponte não encontrar um navegador, aponte `CHROME_PATH` para um Chrome/Chromium instalado. Verificado neste repositório: `npm install` da ponte conclui (351 pacotes) e o pacote exporta `create`, `createClient` e `ev`; sem o binário `zstd` o open-wa falha na importação com "Can not access zstd! Is it installed?".
 
+### Ajustes técnicos necessários no open-wa 5.5.1 (verificados aqui)
+
+- **Interop ESM/CommonJS**: a build ESM do `@open-wa/core` faz `import { EventEmitter2 } from "eventemitter2"`, que o Node 22 rejeita ("Named export 'EventEmitter2' not found"). A ponte é CommonJS (`index.cjs`) e traz um shim local (`shims/eventemitter2`) aplicado por `overrides` no `package.json`, que reexporta o `eventemitter2` real com entradas ESM e CommonJS corretas. Sem isso, `create()` falha mesmo em CommonJS, porque o runtime do open-wa importa o core dinamicamente.
+- **zstd**: o `@open-wa/session-sync` executa `which zstd` na importação e aborta sem o binário.
+- **Chromium como root (Linux/containers)**: o navegador não abre sem `--no-sandbox`; a ponte adiciona isso automaticamente quando roda como root e aceita `CHROMIUM_ARGS` para outros casos. Em Windows/macOS não é necessário.
+- **Patches remotos**: ao iniciar, o open-wa baixa "live patches" de `https://cdn.openwa.dev/patches.json` e os injeta no WhatsApp Web. É assim que ele acompanha mudanças do WhatsApp, mas significa executar código obtido da internet a cada inicialização; exige acesso a esse domínio e confiança no projeto.
+
+Com esses ajustes, neste ambiente a ponte inicializou o driver, baixou os patches, abriu o Chromium (141) e tentou carregar `https://web.whatsapp.com`, bloqueado pela política de rede do ambiente de desenvolvimento. O passo seguinte (QR code e pareamento) precisa ser feito no computador do estabelecimento.
+
 ### O que **não** foi validado neste repositório
 
-- A ponte foi escrita contra as definições TypeScript do open-wa 5.5.1, mas **não foi executada contra um WhatsApp real** (este ambiente não tem conta WhatsApp nem acesso ao WhatsApp Web). Espere ajustes nos nomes de campos do objeto `message` (`from`, `body`, `type`, `t`, `sender.pushname`) na primeira execução.
+- A ponte **não foi pareada com um WhatsApp real** (este ambiente não tem conta WhatsApp nem acesso ao WhatsApp Web). Os nomes de campos do objeto `message` (`from`, `body`, `type`, `t`, `isGroupMsg`, `fromMe`, `sender.pushname`) vêm das definições TypeScript do pacote; confira na primeira execução.
 - Eventos de entrega (ack) não são repassados; a mensagem fica "enviada" quando o `sendText` retorna.
 
 ## Alternativas oficiais (documentadas, não implementadas)

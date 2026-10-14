@@ -2,15 +2,19 @@
   "name": "whatsapp-openwa-bridge",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "description": "Ponte entre o WhatsApp (via open-wa, não oficial) e o sistema de atendimento local",
   "scripts": {
-    "start": "node index.mjs"
+    "start": "node index.cjs"
   },
   "engines": {
     "node": ">=22.12.0"
   },
   "dependencies": {
-    "@open-wa/wa-automate": "^5.5.1"
+    "@open-wa/wa-automate": "^5.5.1",
+    "eventemitter2": "file:./shims/eventemitter2"
+  },
+  "main": "index.cjs",
+  "overrides": {
+    "eventemitter2": "$eventemitter2"
   }
 }

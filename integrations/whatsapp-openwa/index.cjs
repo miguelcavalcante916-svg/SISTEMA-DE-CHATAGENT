@@ -5,11 +5,11 @@
 // Esta ponte só repassa mensagens de conversas individuais (ignora grupos, status e mensagens próprias),
 // e só envia quando o servidor informa WHATSAPP_SEND_ENABLED=true.
 
-import { createHmac, randomUUID } from 'node:crypto';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+// Arquivo CommonJS de propósito: a build ESM do open-wa v5 falha ao importar "eventemitter2" no Node.
+const { createHmac, randomUUID } = require('node:crypto');
+const path = require('node:path');
 
-const here = path.dirname(fileURLToPath(import.meta.url));
+const here = __dirname;
 try {
   process.loadEnvFile(path.join(here, '.env'));
 } catch {
@@ -27,6 +27,14 @@ const CHROME_PATH = env('CHROME_PATH');
 const LICENSE_KEY = env('OPENWA_LICENSE_KEY');
 const POLL_INTERVAL_MS = Number(env('POLL_INTERVAL_MS', '3000'));
 const HEARTBEAT_INTERVAL_MS = Number(env('HEARTBEAT_INTERVAL_MS', '30000'));
+const CHROMIUM_ARGS = env('CHROMIUM_ARGS')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+// Chromium não abre como root sem sandbox desativado (comum em Linux/containers); em Windows/macOS isso não se aplica.
+if (process.platform === 'linux' && typeof process.getuid === 'function' && process.getuid() === 0 && !CHROMIUM_ARGS.includes('--no-sandbox')) {
+  CHROMIUM_ARGS.push('--no-sandbox', '--disable-setuid-sandbox');
+}
 const ALLOWED_RECIPIENTS = env('ALLOWED_RECIPIENTS')
   .split(',')
   .map((s) => s.replace(/\D/g, ''))
@@ -73,7 +81,7 @@ async function heartbeat(details = {}) {
 }
 
 async function main() {
-  const { create } = await import('@open-wa/wa-automate');
+  const { create } = require('@open-wa/wa-automate');
   log('Iniciando sessão open-wa', SESSION_ID, '(headless:', HEADLESS, ')');
   log('Escaneie o QR code exibido no terminal com o WhatsApp do estabelecimento.');
 
@@ -83,6 +91,7 @@ async function main() {
     headless: HEADLESS,
     useChrome: Boolean(CHROME_PATH),
     ...(CHROME_PATH ? { executablePath: CHROME_PATH } : {}),
+    ...(CHROMIUM_ARGS.length ? { chromiumArgs: CHROMIUM_ARGS } : {}),
     ...(LICENSE_KEY ? { licenseKey: LICENSE_KEY } : {}),
     qrTimeout: 0,
     authTimeout: 0,

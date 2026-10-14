@@ -30,6 +30,12 @@ Escaneie o QR code mostrado no terminal com o WhatsApp do estabelecimento. A pas
 - Só conversas individuais são repassadas (grupos, status e mensagens próprias são ignorados).
 - Toda mensagem recebida é enviada ao servidor com assinatura HMAC; a fila de saída usa o token da ponte.
 
+## Por que CommonJS e um shim
+
+O open-wa 5.5.1 falha no Node 22 ao importar `eventemitter2` pela build ESM. Por isso a ponte é `index.cjs` e o `package.json` aponta `eventemitter2` para `shims/eventemitter2` (reexportação com entradas ESM e CommonJS), aplicado também aos pacotes do open-wa via `overrides`. Se uma versão futura do open-wa corrigir isso, basta remover a dependência e o `overrides`.
+
+Ao iniciar, o open-wa baixa patches de `https://cdn.openwa.dev` (necessário para acompanhar o WhatsApp Web). Em Linux como root, `--no-sandbox` é adicionado ao Chromium automaticamente; use `CHROMIUM_ARGS` para outros ajustes.
+
 ## Fluxo
 
 ```
