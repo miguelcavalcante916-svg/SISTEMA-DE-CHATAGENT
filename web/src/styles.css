@@ -155,9 +155,10 @@ svg {
   letter-spacing: 0.06em;
   color: #9fb0cc;
 }
-.sidebar-close,
-.menu-btn,
+.sidebar .sidebar-close,
+.topbar .menu-btn,
 .drawer-backdrop {
+  /* Seletores com duas classes para vencer `.btn { display: inline-flex }`, declarado depois. */
   display: none;
 }
 .main {
@@ -213,7 +214,7 @@ svg {
     transform: translateX(0);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
   }
-  .sidebar-close {
+  .sidebar .sidebar-close {
     display: inline-flex;
     position: absolute;
     top: 0.5rem;
@@ -234,7 +235,7 @@ svg {
     opacity: 1;
     pointer-events: auto;
   }
-  .menu-btn {
+  .topbar .menu-btn {
     display: inline-flex;
   }
   .topbar {
