@@ -757,22 +757,25 @@ table.table {
   background: #fff;
   color: #000;
   font-family: var(--mono);
-  font-size: 12px;
-  line-height: 1.3;
-  padding: 4mm;
+  /* 48 colunas em 72 mm (80 mm) e 32 colunas em 48 mm (58 mm): glifo monoespaçado ≈ 0,6 em */
+  font-size: 2.5mm;
+  line-height: 1.25;
+  padding: 2mm 0;
   margin: 0 auto;
+  box-sizing: content-box;
 }
 .receipt-wrap.w80 {
   width: 72mm;
 }
 .receipt-wrap.w58 {
   width: 48mm;
-  font-size: 11px;
 }
 .receipt-wrap pre {
   margin: 0;
-  white-space: pre-wrap;
+  white-space: pre;
+  overflow: visible;
   font: inherit;
+  letter-spacing: 0;
 }
 .receipt-wrap .page-break {
   page-break-after: always;

@@ -18,7 +18,7 @@ function openTextPrintWindow(lines: string[], widthMm: number, copies: number) {
   if (!w) return false;
   const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const body = Array.from({ length: copies })
-    .map((_, i) => `<pre style="margin:0;white-space:pre-wrap;font:12px/1.3 ui-monospace,Menlo,Consolas,monospace;width:${widthMm === 58 ? 48 : 72}mm;${i < copies - 1 ? 'page-break-after:always;' : ''}">${esc(lines.join('\n'))}</pre>`)
+    .map((_, i) => `<pre style="margin:0;white-space:pre;font:2.5mm/1.25 ui-monospace,Menlo,Consolas,monospace;width:${widthMm === 58 ? 48 : 72}mm;${i < copies - 1 ? 'page-break-after:always;' : ''}">${esc(lines.join('\n'))}</pre>`)
     .join('');
   w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Teste de impressão</title><style>@page{margin:2mm}body{margin:0;padding:4mm}</style></head><body>${body}<script>setTimeout(function(){window.print()},300)</script></body></html>`);
   w.document.close();
