@@ -63,6 +63,13 @@ describe('configuração do estabelecimento', () => {
     expect(patch.statusCode).toBe(403);
   });
 
+  it('configuração inválida responde 400 com o campo errado, não 500', async () => {
+    const res = await ctx.admin({ method: 'PATCH', url: '/api/business', payload: { settings: { pix: { keyType: 'aleatoria' } } } });
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('validation_error');
+    expect(res.json().error.details[0].path).toBe('pix.keyType');
+  });
+
   it('aplica perfil de categoria criando modelos sem preços reais', async () => {
     const res = await ctx.admin({ method: 'POST', url: '/api/business/apply-profile', payload: { category: 'pizzaria' } });
     expect(res.statusCode).toBe(200);

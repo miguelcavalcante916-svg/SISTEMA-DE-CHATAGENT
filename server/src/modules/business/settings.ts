@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { parse } from '../../lib/validate.js';
 
 const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use o formato HH:MM');
 
@@ -187,5 +188,6 @@ export function mergeSettings(current: BusinessSettings, patch: unknown): Busine
       merged[k] = v;
     }
   }
-  return BusinessSettingsSchema.parse(merged);
+  // Valores inválidos vindos do cliente viram 400 com detalhes, nunca 500.
+  return parse(BusinessSettingsSchema, merged);
 }

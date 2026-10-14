@@ -7,6 +7,7 @@ import type { AppConfig } from './config.js';
 import type { AppContext, ProviderRegistry } from './context.js';
 import { openDatabase, type DB } from './db/connection.js';
 import { runMigrations } from './db/migrate.js';
+import { ZodError } from 'zod';
 import { AppError } from './lib/errors.js';
 import { LoginRateLimiter } from './modules/auth/rate-limit.js';
 import { authenticateRequest, authRoutes } from './modules/auth/routes.js';
@@ -125,6 +126,13 @@ export async function buildApp(options: BuildAppOptions): Promise<App> {
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof AppError) {
       reply.code(error.statusCode).send({ error: { code: error.code, message: error.message, details: error.details ?? null } });
+      return;
+    }
+    if (error instanceof ZodError) {
+      // Rede de segurança: qualquer validação zod que escape do helper parse() ainda responde 400.
+      reply.code(400).send({
+        error: { code: 'validation_error', message: 'Dados inválidos', details: error.issues.map((i) => ({ path: i.path.map(String).join('.'), message: i.message })) },
+      });
       return;
     }
     const statusCode = (error as { statusCode?: number }).statusCode;
