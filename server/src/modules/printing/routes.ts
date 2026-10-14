@@ -69,7 +69,7 @@ export async function printingRoutes(app: FastifyInstance): Promise<void> {
     const q = parse(z.object({ reprint: z.enum(['0', '1']).optional(), width: z.enum(['80', '58']).optional() }), request.query);
     const business = getBusiness(db, request.user!.businessId);
     const order = getOrder(db, business.id, id);
-    const reprint = q.reprint === '1' || order.printCount > 0;
+    const reprint = q.reprint !== undefined ? q.reprint === '1' : order.printCount > 0;
     const receipt = buildReceiptModel(order, business, { reprint, printedBy: request.user!.name });
     const width = q.width ? (Number(q.width) as 80 | 58) : business.settings.printer.paperWidthMm;
     return { receipt, text: renderReceiptText(receipt, colsForPaper(width)), paperWidthMm: width, copies: business.settings.printer.copies };

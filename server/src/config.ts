@@ -25,6 +25,9 @@ const EnvSchema = z.object({
   AI_MAX_REPLY_CHARS: z.coerce.number().int().positive().default(800),
   WEBHOOK_SECRET: z.string().default(''),
   WEBHOOK_MAX_AGE_SECONDS: z.coerce.number().int().positive().default(300),
+  WHATSAPP_PROVIDER: z.enum(['none', 'openwa']).default('none'),
+  BRIDGE_TOKEN: z.string().default(''),
+  WHATSAPP_SEND_ENABLED: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
 });
 
 export interface AppConfig {
@@ -43,6 +46,9 @@ export interface AppConfig {
   aiMaxReplyChars: number;
   webhookSecret: string;
   webhookMaxAgeSeconds: number;
+  whatsappProvider: 'none' | 'openwa';
+  bridgeToken: string;
+  whatsappSendEnabled: boolean;
   webDistDir: string;
 }
 
@@ -83,6 +89,9 @@ export function loadConfig(overrides: Record<string, string | undefined> = {}): 
     aiMaxReplyChars: e.AI_MAX_REPLY_CHARS,
     webhookSecret: e.WEBHOOK_SECRET,
     webhookMaxAgeSeconds: e.WEBHOOK_MAX_AGE_SECONDS,
+    whatsappProvider: e.WHATSAPP_PROVIDER,
+    bridgeToken: e.BRIDGE_TOKEN,
+    whatsappSendEnabled: e.WHATSAPP_SEND_ENABLED,
     webDistDir: path.join(ROOT_DIR, 'web', 'dist'),
   };
 }

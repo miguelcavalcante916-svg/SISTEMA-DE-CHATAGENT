@@ -128,7 +128,7 @@ describe('8. comprovante interno', () => {
       items: [
         {
           quantity: 1,
-          name: 'Supercalifragilisticexpialidocious-de-frango-com-catupiry-e-requeijão',
+          name: 'Supercalifragilisticexpialidocious de frango com catupiry e requeijão especial da casa',
           variant: null,
           unitPriceCents: 123456,
           optionsPriceCents: 0,
@@ -147,7 +147,8 @@ describe('8. comprovante interno', () => {
     const joined = lines.join('\n');
     expect(joined).toContain('R$ 1.234,56');
     expect(joined).toContain('requeijão');
-    expect(joined).toContain('ação, pão, café'.slice(0, 4));
+    expect(joined).toContain('Supercalifragilisticexpialidocious'.slice(0, 32));
+    expect(lines.some((l) => l.includes('TESTE DE IMPRESSÃO'))).toBe(true);
   });
 });
 

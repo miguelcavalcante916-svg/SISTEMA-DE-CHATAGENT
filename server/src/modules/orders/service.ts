@@ -63,7 +63,7 @@ export interface OrderItemDto {
   quantity: number;
   lineTotalCents: number;
   notes: string | null;
-  options: { groupName: string; optionName: string; priceCents: number; quantity: number }[];
+  options: { groupId: string | null; optionId: string | null; groupName: string; optionName: string; priceCents: number; quantity: number }[];
 }
 
 export interface OrderEventDto {
@@ -318,10 +318,10 @@ function loadItems(db: DB, orderIds: string[]): Map<string, OrderItemDto[]> {
     const ph = itemIds.map(() => '?').join(',');
     const optRows = db
       .prepare(`SELECT * FROM order_item_options WHERE order_item_id IN (${ph})`)
-      .all(...itemIds) as { order_item_id: string; group_name: string; option_name: string; price_cents: number; quantity: number }[];
+      .all(...itemIds) as { order_item_id: string; group_id: string | null; option_id: string | null; group_name: string; option_name: string; price_cents: number; quantity: number }[];
     for (const o of optRows) {
       const list = optionsByItem.get(o.order_item_id) ?? [];
-      list.push({ groupName: o.group_name, optionName: o.option_name, priceCents: o.price_cents, quantity: o.quantity });
+      list.push({ groupId: o.group_id, optionId: o.option_id, groupName: o.group_name, optionName: o.option_name, priceCents: o.price_cents, quantity: o.quantity });
       optionsByItem.set(o.order_item_id, list);
     }
   }

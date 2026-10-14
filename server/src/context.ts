@@ -29,6 +29,7 @@ declare module 'fastify' {
     user: AuthUser | null;
     sessionToken: string | null;
     sessionTokenHash: string | null;
+    rawBody?: string;
   }
   interface FastifyContextConfig {
     auth?: 'public' | 'user' | 'admin';

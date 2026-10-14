@@ -247,7 +247,7 @@ export function renderReceiptText(m: ReceiptModel, cols: number): string[] {
   }
   out.push(rule);
   if (m.footerText) out.push(...center(m.footerText, cols));
-  out.push(...center(m.disclaimer, cols));
+  for (const part of m.disclaimer.split(/(?<=\.)\s+/)) out.push(...center(part, cols));
   out.push(...center(`Impresso em ${m.printedAt}`, cols));
   return out;
 }

@@ -57,7 +57,7 @@ export async function buildApp(options: BuildAppOptions): Promise<App> {
     bodyLimit: 1024 * 1024,
   });
 
-  const providers = createDefaultProviders(config, options.providers);
+  const providers = createDefaultProviders(config, db, options.providers);
   const ctx: AppContext = { db, config, loginLimiter: new LoginRateLimiter(), providers, events: new EventEmitter() };
   app.decorate('ctx', ctx);
   app.decorateRequest('user', null);
@@ -65,6 +65,23 @@ export async function buildApp(options: BuildAppOptions): Promise<App> {
   app.decorateRequest('sessionTokenHash', null);
 
   await app.register(cookie, { hook: 'onRequest' });
+
+  // Mantém o corpo bruto apenas para rotas de webhook (validação de assinatura HMAC)
+  app.addContentTypeParser('application/json', { parseAs: 'string' }, (request, body, done) => {
+    const text = typeof body === 'string' ? body : body.toString('utf8');
+    if (request.url.startsWith('/api/webhooks/')) request.rawBody = text;
+    if (text.trim() === '') {
+      done(null, {});
+      return;
+    }
+    try {
+      done(null, JSON.parse(text));
+    } catch (err) {
+      const e = err as Error & { statusCode?: number };
+      e.statusCode = 400;
+      done(e, undefined);
+    }
+  });
 
   // Cabeçalhos de segurança básicos
   app.addHook('onSend', async (request, reply) => {
