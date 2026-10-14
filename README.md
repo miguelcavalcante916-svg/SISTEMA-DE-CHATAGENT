@@ -80,7 +80,7 @@ Cadastre chave, recebedor e cidade em Configurações › Pagamentos e Pix e cli
 
 ## WhatsApp (open-wa, não oficial)
 
-Por decisão do proprietário, o WhatsApp é conectado pela ponte `integrations/whatsapp-openwa` (open-wa). Isso **não é autorizado pela Meta** e pode levar ao bloqueio do número. Passo a passo, riscos e alternativas oficiais: `docs/INTEGRACOES.md`.
+O canal de WhatsApp deste sistema é a ponte `integrations/whatsapp-openwa`, baseada no open-wa (repositório `open-wa/wa-automate-nodejs`). Pré-requisitos: Chrome/Chromium, utilitário `zstd` no PATH e um número dedicado. Comandos: `npm run whatsapp:install` e `npm run whatsapp:start` (após preencher o `.env` da ponte). O open-wa automatiza o WhatsApp Web e **não é autorizado pela Meta**; há risco de bloqueio do número. Passo a passo, riscos e alternativas: `docs/INTEGRACOES.md`.
 
 ## Backup e restauração
 

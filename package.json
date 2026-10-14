@@ -20,7 +20,9 @@
     "migrate": "npm run migrate -w server",
     "seed:demo": "npm run seed:demo -w server",
     "backup": "npm run backup -w server",
-    "backup:verify": "npm run backup:verify -w server"
+    "backup:verify": "npm run backup:verify -w server",
+    "whatsapp:install": "npm install --prefix integrations/whatsapp-openwa",
+    "whatsapp:start": "npm start --prefix integrations/whatsapp-openwa"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

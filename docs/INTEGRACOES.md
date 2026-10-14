@@ -45,17 +45,23 @@ WhatsApp Web (Chromium)  <->  integrations/whatsapp-openwa (open-wa)  <->  servi
    WHATSAPP_SEND_ENABLED=false   # mantenha false até terminar os testes
    ```
 2. No painel: Configurações › Canais › marque "WhatsApp via ponte open-wa".
-3. Na pasta `integrations/whatsapp-openwa`:
+3. Instale o utilitário **zstd** no computador (o open-wa exige o binário `zstd` no PATH e recusa iniciar sem ele):
+   - Windows: `winget install Facebook.Zstandard` (ou baixe em https://github.com/facebook/zstd/releases e coloque `zstd.exe` no PATH)
+   - macOS: `brew install zstd`
+   - Linux (Debian/Ubuntu): `sudo apt install zstd`
+   Confira com `zstd --version`.
+4. Na pasta do repositório:
    ```
-   npm install
-   cp .env.example .env   # preencha WEBHOOK_SECRET e BRIDGE_TOKEN iguais aos do servidor
-   npm start
+   npm run whatsapp:install                       # instala a ponte (≈380 MB com dependências)
+   cp integrations/whatsapp-openwa/.env.example integrations/whatsapp-openwa/.env
+   # preencha WEBHOOK_SECRET e BRIDGE_TOKEN iguais aos do servidor
+   npm run whatsapp:start
    ```
    Escaneie o QR code no terminal com o WhatsApp do número do estabelecimento. A pasta `session-data/` guarda a sessão: **não compartilhe** (contém credenciais do WhatsApp Web).
-4. Verifique em Configurações › Canais se aparece "conectado" (heartbeat da ponte).
-5. Teste recebendo mensagens de um celular seu. Para testar envio, defina `ALLOWED_RECIPIENTS=<seu número com DDI>` na ponte e `WHATSAPP_SEND_ENABLED=true` no servidor; reinicie os dois.
+5. Verifique em Configurações › Canais se aparece "conectado" (heartbeat da ponte).
+6. Teste recebendo mensagens de um celular seu. Para testar envio, defina `ALLOWED_RECIPIENTS=<seu número com DDI>` na ponte e `WHATSAPP_SEND_ENABLED=true` no servidor; reinicie os dois.
 
-Se `npm install` da ponte não conseguir baixar o Chromium, aponte `CHROME_PATH` para um Chrome/Chromium instalado.
+Se a ponte não encontrar um navegador, aponte `CHROME_PATH` para um Chrome/Chromium instalado. Verificado neste repositório: `npm install` da ponte conclui (351 pacotes) e o pacote exporta `create`, `createClient` e `ev`; sem o binário `zstd` o open-wa falha na importação com "Can not access zstd! Is it installed?".
 
 ### O que **não** foi validado neste repositório
 
