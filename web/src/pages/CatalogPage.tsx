@@ -206,7 +206,7 @@ function ProductModal({ product, categories, groups, products, onClose }: { prod
     prepMinutes: product?.prepMinutes?.toString() ?? '',
     sortOrder: product?.sortOrder ?? 0,
     imageUrl: product?.imageUrl ?? '',
-    variants: (product?.variants ?? []).filter((v) => !v.archivedAt).map((v) => ({ id: v.id, name: v.name, price: centsToInput(v.priceCents), isAvailable: v.isAvailable })),
+    variants: (product?.variants ?? []).filter((v) => !v.archivedAt).map((v) => ({ id: v.id as string | undefined, name: v.name, price: centsToInput(v.priceCents), isAvailable: v.isAvailable })),
     optionGroupIds: product?.optionGroupIds ?? [],
     comboItems: product?.comboItems ?? [],
     availabilityOn: Boolean(product?.availability),
@@ -332,7 +332,7 @@ function GroupModal({ group, onClose }: { group: OptionGroup | null; onClose: ()
     minSelect: group?.minSelect ?? 0,
     maxSelect: group?.maxSelect ?? 1,
     pricingMode: group?.pricingMode ?? 'sum',
-    options: (group?.options ?? []).filter((o) => !o.archivedAt).map((o) => ({ id: o.id, name: o.name, price: centsToInput(o.priceCents), isAvailable: o.isAvailable, maxQuantity: o.maxQuantity })),
+    options: (group?.options ?? []).filter((o) => !o.archivedAt).map((o) => ({ id: o.id as string | undefined, name: o.name, price: centsToInput(o.priceCents), isAvailable: o.isAvailable, maxQuantity: o.maxQuantity })),
   });
   const [error, setError] = useState<string | null>(null);
   const save = useMutation({

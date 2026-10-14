@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Alert, Spinner } from './components/ui';
@@ -16,7 +17,7 @@ import { SimulatorPage } from './pages/SimulatorPage';
 import { UsersPage } from './pages/UsersPage';
 import { useAuth } from './state/auth';
 
-function Gate({ children, admin = false }: { children: JSX.Element; admin?: boolean }) {
+function Gate({ children, admin = false }: { children: ReactElement; admin?: boolean }) {
   const { status, loading, error, user } = useAuth();
   const location = useLocation();
   if (loading) {

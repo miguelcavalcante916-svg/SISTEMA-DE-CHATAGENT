@@ -195,7 +195,7 @@ export interface OrderItem {
   quantity: number;
   lineTotalCents: number;
   notes: string | null;
-  options: { groupName: string; optionName: string; priceCents: number; quantity: number }[];
+  options: { groupId: string | null; optionId: string | null; groupName: string; optionName: string; priceCents: number; quantity: number }[];
 }
 export interface OrderEvent {
   id: string;
