@@ -63,3 +63,33 @@ export function formatDateTime(iso: string, timeZone: string): string {
     hourCycle: 'h23',
   }).format(new Date(iso));
 }
+
+/** Converte data+hora locais (no fuso) para instante UTC, com segunda passagem para bordas de horário de verão. */
+export function zonedToUtc(date: string, time: string, timeZone: string): Date {
+  const [y, m, d] = date.split('-').map(Number) as [number, number, number];
+  const [hh, mm] = time.split(':').map(Number) as [number, number];
+  const target = Date.UTC(y, m - 1, d, hh, mm);
+  const offsetAt = (utcMs: number): number => {
+    const p = localParts(new Date(utcMs), timeZone);
+    const [py, pm, pd] = p.date.split('-').map(Number) as [number, number, number];
+    const asUtc = Date.UTC(py, pm - 1, pd, Math.floor(p.minutesOfDay / 60), p.minutesOfDay % 60);
+    return asUtc - utcMs;
+  };
+  let utc = target - offsetAt(target);
+  utc = target - offsetAt(utc);
+  return new Date(utc);
+}
+
+/** Intervalo [início, fim) em UTC de um dia local. */
+export function localDayRangeUtc(date: string, timeZone: string): { startIso: string; endIso: string } {
+  const start = zonedToUtc(date, '00:00', timeZone);
+  const end = new Date(start.getTime() + 86_400_000 + 3_600_000);
+  // fim = início do dia seguinte (recalculado para respeitar DST)
+  const nextDate = localParts(new Date(start.getTime() + 36 * 3_600_000), timeZone).date;
+  const nextStart = zonedToUtc(nextDate, '00:00', timeZone);
+  return { startIso: start.toISOString(), endIso: (nextStart.getTime() > start.getTime() ? nextStart : end).toISOString() };
+}
+
+export function todayLocalDate(timeZone: string, now: Date = new Date()): string {
+  return localParts(now, timeZone).date;
+}
